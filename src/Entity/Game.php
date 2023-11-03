@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\MatchesRepository;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MatchesRepository::class)]
+#[ORM\Entity(repositoryClass: GameRepository::class)]
+#[ApiResource]
 class Game
 {
     #[ORM\Id]
@@ -28,10 +30,10 @@ class Game
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateMatch = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matches')]
+    #[ORM\ManyToOne(inversedBy: 'games')]
     private ?Team $teamId1 = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matches')]
+    #[ORM\ManyToOne(inversedBy: 'games')]
     private ?Team $teamId2 = null;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Bet::class)]

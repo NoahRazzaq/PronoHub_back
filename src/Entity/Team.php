@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
+#[ApiResource]
 class Team
 {
     #[ORM\Id]
@@ -63,29 +65,29 @@ class Team
     }
 
     /**
-     * @return Collection<int, Matches>
+     * @return Collection<int, Games>
      */
-    public function getMatches(): Collection
+    public function getGames(): Collection
     {
         return $this->games;
     }
 
-    public function addMatch(Game $match): static
+    public function addGame(Game $game): static
     {
-        if (!$this->games->contains($match)) {
-            $this->games->add($match);
-            $match->setTeamId1($this);
+        if (!$this->games->contains($game)) {
+            $this->games->add($game);
+            $game->setTeamId1($this);
         }
 
         return $this;
     }
 
-    public function removeMatch(Game $match): static
+    public function removeGame(Game $game): static
     {
-        if ($this->games->removeElement($match)) {
+        if ($this->games->removeElement($game)) {
             // set the owning side to null (unless already changed)
-            if ($match->getTeamId1() === $this) {
-                $match->setTeamId1(null);
+            if ($game->getTeamId1() === $this) {
+                $game->setTeamId1(null);
             }
         }
 
