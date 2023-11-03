@@ -5,14 +5,9 @@ namespace App\Entity;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
-#[ApiResource]
 class Team
 {
     #[ORM\Id]
@@ -23,19 +18,19 @@ class Team
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $logo = null;
 
-    #[ORM\OneToMany(mappedBy: 'teamId', targetEntity: Bet::class)]
-    private Collection $bets;
+    #[ORM\OneToMany(mappedBy: 'teamId1', targetEntity: Game::class)]
+    private Collection $games;
 
-    #[ORM\OneToMany(mappedBy: 'teamId1', targetEntity: Matches::class)]
-    private Collection $matches;
+    #[ORM\OneToMany(mappedBy: 'team', targetEntity: Bet::class)]
+    private Collection $bets;
 
     public function __construct()
     {
+        $this->games = new ArrayCollection();
         $this->bets = new ArrayCollection();
-        $this->matches = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -60,9 +55,39 @@ class Team
         return $this->logo;
     }
 
-    public function setLogo(?string $logo): static
+    public function setLogo(string $logo): static
     {
         $this->logo = $logo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Matches>
+     */
+    public function getMatches(): Collection
+    {
+        return $this->games;
+    }
+
+    public function addMatch(Game $match): static
+    {
+        if (!$this->games->contains($match)) {
+            $this->games->add($match);
+            $match->setTeamId1($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatch(Game $match): static
+    {
+        if ($this->games->removeElement($match)) {
+            // set the owning side to null (unless already changed)
+            if ($match->getTeamId1() === $this) {
+                $match->setTeamId1(null);
+            }
+        }
 
         return $this;
     }
@@ -79,7 +104,7 @@ class Team
     {
         if (!$this->bets->contains($bet)) {
             $this->bets->add($bet);
-            $bet->setTeamId($this);
+            $bet->setTeam($this);
         }
 
         return $this;
@@ -89,42 +114,11 @@ class Team
     {
         if ($this->bets->removeElement($bet)) {
             // set the owning side to null (unless already changed)
-            if ($bet->getTeamId() === $this) {
-                $bet->setTeamId(null);
+            if ($bet->getTeam() === $this) {
+                $bet->setTeam(null);
             }
         }
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Matches>
-     */
-    public function getMatches(): Collection
-    {
-        return $this->matches;
-    }
-
-    public function addMatch(Matches $match): static
-    {
-        if (!$this->matches->contains($match)) {
-            $this->matches->add($match);
-            $match->setTeamId1($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMatch(Matches $match): static
-    {
-        if ($this->matches->removeElement($match)) {
-            // set the owning side to null (unless already changed)
-            if ($match->getTeamId1() === $this) {
-                $match->setTeamId1(null);
-            }
-        }
-
-        return $this;
-    }
-
 }
