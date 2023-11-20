@@ -2,18 +2,30 @@
 
 namespace App\Entity;
 
-use App\Repository\LeaderboardRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Repository\LeaderBoardRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: LeaderboardRepository::class)]
-#[ApiResource]
-class Leaderboard
+#[ORM\Entity(repositoryClass: LeaderBoardRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(),
+    ]
+)]
+class LeaderBoard
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,9 +34,6 @@ class Leaderboard
 
     #[ORM\Column(nullable: true)]
     private ?int $position = null;
-
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'leaderboards')]
-    private Collection $userId;
 
     #[ORM\Column(nullable: true)]
     private ?int $points = null;
@@ -35,9 +44,12 @@ class Leaderboard
     #[ORM\Column(nullable: true)]
     private ?int $nbLose = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'leaderBoards')]
+    private Collection $users;
+
     public function __construct()
     {
-        $this->userId = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -53,30 +65,6 @@ class Leaderboard
     public function setPosition(?int $position): static
     {
         $this->position = $position;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUserId(): Collection
-    {
-        return $this->userId;
-    }
-
-    public function addUserId(User $userId): static
-    {
-        if (!$this->userId->contains($userId)) {
-            $this->userId->add($userId);
-        }
-
-        return $this;
-    }
-
-    public function removeUserId(User $userId): static
-    {
-        $this->userId->removeElement($userId);
 
         return $this;
     }
@@ -113,6 +101,33 @@ class Leaderboard
     public function setNbLose(?int $nbLose): static
     {
         $this->nbLose = $nbLose;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addLeaderBoard($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeLeaderBoard($this);
+        }
 
         return $this;
     }

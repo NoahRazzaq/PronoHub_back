@@ -2,18 +2,30 @@
 
 namespace App\Entity;
 
-use App\Repository\LigueRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Repository\LeagueRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: LigueRepository::class)]
-#[ApiResource]
-class Ligue
+#[ORM\Entity(repositoryClass: LeagueRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(),
+    ]
+)]
+class League
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,11 +38,15 @@ class Ligue
     #[ORM\Column(length: 255)]
     private ?string $codeInvite = null;
 
-    #[ORM\OneToMany(mappedBy: 'ligueId', targetEntity: Bet::class)]
+    #[ORM\OneToMany(mappedBy: 'league', targetEntity: Bet::class)]
     private Collection $bets;
 
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'leagueId')]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'league')]
     private Collection $users;
+
+    #[ORM\ManyToOne(inversedBy: 'leagues')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $idUserCreator = null;
 
     public function __construct()
     {
@@ -79,7 +95,7 @@ class Ligue
     {
         if (!$this->bets->contains($bet)) {
             $this->bets->add($bet);
-            $bet->setLigueId($this);
+            $bet->setLeague($this);
         }
 
         return $this;
@@ -89,8 +105,8 @@ class Ligue
     {
         if ($this->bets->removeElement($bet)) {
             // set the owning side to null (unless already changed)
-            if ($bet->getLigueId() === $this) {
-                $bet->setLigueId(null);
+            if ($bet->getLeague() === $this) {
+                $bet->setLeague(null);
             }
         }
 
@@ -109,7 +125,7 @@ class Ligue
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
-            $user->addLeagueId($this);
+            $user->addLeague($this);
         }
 
         return $this;
@@ -118,8 +134,20 @@ class Ligue
     public function removeUser(User $user): static
     {
         if ($this->users->removeElement($user)) {
-            $user->removeLeagueId($this);
+            $user->removeLeague($this);
         }
+
+        return $this;
+    }
+
+    public function getIdUserCreator(): ?User
+    {
+        return $this->idUserCreator;
+    }
+
+    public function setIdUserCreator(?User $idUserCreator): static
+    {
+        $this->idUserCreator = $idUserCreator;
 
         return $this;
     }

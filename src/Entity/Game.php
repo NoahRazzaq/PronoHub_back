@@ -2,50 +2,64 @@
 
 namespace App\Entity;
 
-use App\Repository\MatchesRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 
-#[ORM\Entity(repositoryClass: MatchesRepository::class)]
-#[ApiResource]
-class Matches
+#[ORM\Entity(repositoryClass: GameRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(),
+    ]
+)]
+class Game
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     private ?int $score1 = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $score2 = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $banner = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateMatch = null;
 
-    #[ORM\OneToMany(mappedBy: 'matchId', targetEntity: Bet::class)]
-    private Collection $bets;
-
-    #[ORM\ManyToOne(inversedBy: 'matches')]
+    #[ORM\ManyToOne(inversedBy: 'games')]
     private ?Team $teamId1 = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matches')]
+    #[ORM\ManyToOne(inversedBy: 'games')]
     private ?Team $teamId2 = null;
+
+    #[ORM\OneToMany(mappedBy: 'game', targetEntity: Bet::class)]
+    private Collection $bets;
+
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
 
     public function __construct()
     {
         $this->bets = new ArrayCollection();
-        $this->teamId1 = new ArrayCollection();
-        $this->teamId2 = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -58,7 +72,7 @@ class Matches
         return $this->score1;
     }
 
-    public function setScore1(?int $score1): static
+    public function setScore1(int $score1): static
     {
         $this->score1 = $score1;
 
@@ -82,7 +96,7 @@ class Matches
         return $this->banner;
     }
 
-    public function setBanner(?string $banner): static
+    public function setBanner(string $banner): static
     {
         $this->banner = $banner;
 
@@ -94,39 +108,9 @@ class Matches
         return $this->dateMatch;
     }
 
-    public function setDateMatch(?\DateTimeInterface $dateMatch): static
+    public function setDateMatch(\DateTimeInterface $dateMatch): static
     {
         $this->dateMatch = $dateMatch;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Bet>
-     */
-    public function getBets(): Collection
-    {
-        return $this->bets;
-    }
-
-    public function addBet(Bet $bet): static
-    {
-        if (!$this->bets->contains($bet)) {
-            $this->bets->add($bet);
-            $bet->setMatchId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBet(Bet $bet): static
-    {
-        if ($this->bets->removeElement($bet)) {
-            // set the owning side to null (unless already changed)
-            if ($bet->getMatchId() === $this) {
-                $bet->setMatchId(null);
-            }
-        }
 
         return $this;
     }
@@ -155,4 +139,45 @@ class Matches
         return $this;
     }
 
+    /**
+     * @return Collection<int, Bet>
+     */
+    public function getBets(): Collection
+    {
+        return $this->bets;
+    }
+
+    public function addBet(Bet $bet): static
+    {
+        if (!$this->bets->contains($bet)) {
+            $this->bets->add($bet);
+            $bet->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBet(Bet $bet): static
+    {
+        if ($this->bets->removeElement($bet)) {
+            // set the owning side to null (unless already changed)
+            if ($bet->getGame() === $this) {
+                $bet->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
 }

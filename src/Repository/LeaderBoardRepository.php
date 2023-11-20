@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\Ligue;
+use App\Entity\LeaderBoard;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Ligue>
+ * @extends ServiceEntityRepository<LeaderBoard>
  *
- * @method Ligue|null find($id, $lockMode = null, $lockVersion = null)
- * @method Ligue|null findOneBy(array $criteria, array $orderBy = null)
- * @method Ligue[]    findAll()
- * @method Ligue[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method LeaderBoard|null find($id, $lockMode = null, $lockVersion = null)
+ * @method LeaderBoard|null findOneBy(array $criteria, array $orderBy = null)
+ * @method LeaderBoard[]    findAll()
+ * @method LeaderBoard[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class LigueRepository extends ServiceEntityRepository
+class LeaderBoardRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Ligue::class);
+        parent::__construct($registry, LeaderBoard::class);
     }
 
 //    /**
-//     * @return Ligue[] Returns an array of Ligue objects
+//     * @return LeaderBoard[] Returns an array of LeaderBoard objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class LigueRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Ligue
+//    public function findOneBySomeField($value): ?LeaderBoard
 //    {
 //        return $this->createQueryBuilder('l')
 //            ->andWhere('l.exampleField = :val')

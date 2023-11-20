@@ -2,16 +2,29 @@
 
 namespace App\Entity;
 
-use App\Repository\BetRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Repository\BetRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BetRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(),
+    ]
+)]
 class Bet
 {
     #[ORM\Id]
@@ -19,26 +32,27 @@ class Bet
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'bets')]
-    #[ApiResource]
-    private Collection $userId;
+    #[ORM\ManyToOne(inversedBy: 'bets')]
+    private ?Team $team = null;
 
     #[ORM\ManyToOne(inversedBy: 'bets')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Team $teamId = null;
+    private ?Game $game = null;
 
     #[ORM\ManyToOne(inversedBy: 'bets')]
-    private ?Matches $matchId = null;
-
-    #[ORM\ManyToOne(inversedBy: 'bets')]
-    private ?Ligue $ligueId = null;
+    private ?League $league = null;
 
     #[ORM\Column]
     private ?bool $isDraw = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'bet')]
+    private Collection $users;
+
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
+
     public function __construct()
     {
-        $this->userId = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -46,62 +60,38 @@ class Bet
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUserId(): Collection
+    public function getTeam(): ?Team
     {
-        return $this->userId;
+        return $this->team;
     }
 
-    public function addUserId(User $userId): static
+    public function setTeam(?Team $team): static
     {
-        if (!$this->userId->contains($userId)) {
-            $this->userId->add($userId);
-        }
+        $this->team = $team;
 
         return $this;
     }
 
-    public function removeUserId(User $userId): static
+    public function getGame(): ?Game
     {
-        $this->userId->removeElement($userId);
+        return $this->game;
+    }
+
+    public function setGame(?Game $game): static
+    {
+        $this->game = $game;
 
         return $this;
     }
 
-    public function getTeamId(): ?Team
+    public function getLeague(): ?League
     {
-        return $this->teamId;
+        return $this->league;
     }
 
-    public function setTeamId(?Team $teamId): static
+    public function setLeague(?League $league): static
     {
-        $this->teamId = $teamId;
-
-        return $this;
-    }
-
-    public function getMatchId(): ?Matches
-    {
-        return $this->matchId;
-    }
-
-    public function setMatchId(?Matches $matchId): static
-    {
-        $this->matchId = $matchId;
-
-        return $this;
-    }
-
-    public function getLigueId(): ?Ligue
-    {
-        return $this->ligueId;
-    }
-
-    public function setLigueId(?Ligue $ligueId): static
-    {
-        $this->ligueId = $ligueId;
+        $this->league = $league;
 
         return $this;
     }
@@ -114,6 +104,45 @@ class Bet
     public function setIsDraw(bool $isDraw): static
     {
         $this->isDraw = $isDraw;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addBet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeBet($this);
+        }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
