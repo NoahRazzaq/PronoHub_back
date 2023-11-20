@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -24,7 +26,7 @@ class UserController extends AbstractController
         $user = new User();
         $user->setEmail($data['email'])
             ->setPassword($data['password'])
-            ->setUsername($data['username'])
+            ->setUsername($data['email'])
             ->setName($data['name'])
             ->setLastname($data['lastname']);
 
@@ -34,6 +36,7 @@ class UserController extends AbstractController
         $manager->persist($user);
         $manager->flush();
 
-        return $this->json(['message' => 'User created successfully'], Response::HTTP_CREATED);
+        return $this->json(['email' => $user->getEmail(), 'message' => 'User created successfully'], Response::HTTP_CREATED);
     }
+
 }
