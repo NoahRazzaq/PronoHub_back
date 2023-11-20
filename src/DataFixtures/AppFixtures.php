@@ -12,9 +12,17 @@ use App\Entity\Pokedex;
 use App\Entity\Team;
 use App\Entity\User;
 use Faker;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+    
     public function load(ObjectManager $manager): void
     {
 
@@ -49,11 +57,12 @@ class AppFixtures extends Fixture
 
         for ($i = 0; $i < 9; $i++) {
             $users = new User();
-            $password = $faker->password(2, 6);
+            $hashedPassword = $this->passwordHasher->hashPassword($users, 'password');
             $users->setLastname($faker->lastName)
                    ->setName($faker->name)
                    ->setEmail($faker->email)
-                   ->setPassword($password);
+                   ->setPassword($hashedPassword)
+                   ->setUsername($faker->name);
             
             $manager->persist($users);
         

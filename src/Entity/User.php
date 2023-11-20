@@ -21,7 +21,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
     operations: [
         new Get(),
         new GetCollection(),
-        new Post(),
         new Put(),
         new Patch(),
         new Delete(),
@@ -64,6 +63,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'idUserCreator', targetEntity: League::class)]
     private Collection $leagues;
+
+    #[ORM\Column(length: 255 )]
+    private ?string $username = null;
 
     public function __construct()
     {
@@ -245,5 +247,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getLeagues(): Collection
     {
         return $this->leagues;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
+        return $this;
     }
 }
