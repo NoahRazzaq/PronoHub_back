@@ -54,8 +54,8 @@ class Game
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Bet::class)]
     private Collection $bets;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[ORM\ManyToOne(inversedBy: 'games')]
+    private ?Category $idCategory = null;
 
     public function __construct()
     {
@@ -169,15 +169,16 @@ class Game
         return $this;
     }
 
-    public function getType(): ?string
+    public function getIdCategory(): ?Category
     {
-        return $this->type;
+        return $this->idCategory;
     }
 
-    public function setType(string $type): static
+    public function setIdCategory(?Category $idCategory): static
     {
-        $this->type = $type;
+        $this->idCategory = $idCategory;
 
         return $this;
     }
+    
 }
