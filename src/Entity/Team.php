@@ -3,13 +3,35 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(
+            denormalizationContext: ['groups' => ['team:write']],
+        ),
+        new Patch(),
+        new Delete(),
+    ],
+)]
+#[ApiFilter(SearchFilter::class, properties: ['type' => 'exact'])]
+
 class Team
 {
     #[ORM\Id]
@@ -18,16 +40,24 @@ class Team
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['team:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['team:write'])]
     private ?string $logo = null;
 
     #[ORM\OneToMany(mappedBy: 'teamId1', targetEntity: Game::class)]
+    #[Groups(['team:write'])]
     private Collection $games;
 
     #[ORM\OneToMany(mappedBy: 'team', targetEntity: Bet::class)]
+    #[Groups(['team:write'])]
     private Collection $bets;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['team:write'])]
+    private ?string $type = null;
 
     public function __construct()
     {
@@ -120,6 +150,18 @@ class Team
                 $bet->setTeam(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

@@ -23,13 +23,15 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 12; $i++) {
             $teams1 = new Team();
             $teams1->setName($faker->name)
-                ->setLogo($faker->text);
+                ->setLogo($faker->text)
+                ->setType($faker->word);
 
             $manager->persist($teams1);
 
             $teams2 = new Team();
             $teams2->setName($faker->name)
-                ->setLogo($faker->text);
+                ->setLogo($faker->text)
+                ->setType($faker->word);
 
             $manager->persist($teams2);
 
@@ -39,28 +41,34 @@ class AppFixtures extends Fixture
                 ->setBanner($faker->text)
                 ->setDateMatch($faker->dateTime())
                 ->setTeamId1($teams1)
-                ->setTeamId2($teams2);
+                ->setTeamId2($teams2)
+                ->setType($faker->word);
 
             $manager->persist($games);
         }
 
-         for ($i = 0; $i < 9; $i++) {
-                $leagues = new League();
-                $leagues->setName($faker->name)
-                       ->setCodeInvite($faker->uuid);
-    
-                $manager->persist($leagues);
-    
-                $users = new User();
-                $password = $faker->password(2, 6);
-                $users->setLastname($faker->lastName)
-                       ->setName($faker->name)
-                       ->setEmail($faker->email)
-                       ->setPassword($faker->password(2, 6))
-                       ->addLeague($leagues);
-    
-                $manager->persist($users);
-    
+        for ($i = 0; $i < 9; $i++) {
+            $users = new User();
+            $password = $faker->password(2, 6);
+            $users->setLastname($faker->lastName)
+                   ->setName($faker->name)
+                   ->setEmail($faker->email)
+                   ->setPassword($password);
+            
+            $manager->persist($users);
+        
+            $leagues = new League();
+            $leagues->setName($faker->name)
+                   ->setCodeInvite($faker->uuid)
+                   ->setIdUserCreator($users);
+            
+            $manager->persist($leagues);
+        
+            // Ajouter la ligue à l'utilisateur après la création de la ligue
+            $users->addLeague($leagues);
+
+            $manager->persist($users);
+        
                 $leaderboards = new LeaderBoard();
                 $leaderboards->setPosition($faker->randomDigit)
                              ->addUser($users)
@@ -74,10 +82,11 @@ class AppFixtures extends Fixture
             for ($i = 0; $i < 12; $i++) {
                 $bets = new Bet();
                 $bets->addUser($users)
-                ->setGame($games)
+                    ->setGame($games)
                      ->setLeague($leagues)
                      ->setTeam($teams1)
-                     ->setIsDraw($faker->boolean);
+                     ->setIsDraw($faker->boolean)
+                     ->setStatus($faker->name);
     
                 $manager->persist($bets);
             }

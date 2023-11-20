@@ -3,13 +3,28 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\LeagueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LeagueRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(),
+    ]
+)]
 class League
 {
     #[ORM\Id]
@@ -28,6 +43,10 @@ class League
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'league')]
     private Collection $users;
+
+    #[ORM\ManyToOne(inversedBy: 'leagues')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $idUserCreator = null;
 
     public function __construct()
     {
@@ -117,6 +136,18 @@ class League
         if ($this->users->removeElement($user)) {
             $user->removeLeague($this);
         }
+
+        return $this;
+    }
+
+    public function getIdUserCreator(): ?User
+    {
+        return $this->idUserCreator;
+    }
+
+    public function setIdUserCreator(?User $idUserCreator): static
+    {
+        $this->idUserCreator = $idUserCreator;
 
         return $this;
     }
