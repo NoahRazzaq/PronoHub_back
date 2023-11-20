@@ -6,6 +6,7 @@ use App\Entity\Bet;
 use App\Entity\Game;
 use App\Entity\LeaderBoard;
 use App\Entity\League;
+use App\Entity\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Pokedex;
@@ -35,6 +36,11 @@ class AppFixtures extends Fixture
 
             $manager->persist($teams2);
 
+            $categorys = new Category();
+            $categorys->setName($faker->name);
+
+            $manager->persist($categorys);
+
             $games = new Game();
             $games->setScore1($faker->randomDigit)
                 ->setScore2($faker->randomDigit)
@@ -42,7 +48,7 @@ class AppFixtures extends Fixture
                 ->setDateMatch($faker->dateTime())
                 ->setTeamId1($teams1)
                 ->setTeamId2($teams2)
-                ->setType($faker->word);
+                ->setIdCategory($categorys);
 
             $manager->persist($games);
         }
