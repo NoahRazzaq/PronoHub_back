@@ -11,16 +11,24 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\TeamController;
 use App\Repository\TeamRepository;
+use App\State\TeamStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 #[ApiResource(
+    normalizationContext:['groups' => ['team:read'], 'swagger_definition_name' => 'Read'],
     operations: [
-        new Get(),
+        new Get(
+            name: 'teamID', 
+        uriTemplate: '/teams/{id}', 
+        controller: TeamController::class
+    ),
         new GetCollection(),
         new Post(),
         new Put(
@@ -28,6 +36,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Patch(),
         new Delete(),
+
+    
     ],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['type' => 'exact'])]
@@ -49,15 +59,15 @@ class Team
     private ?string $logo = null;
 
     #[ORM\OneToMany(mappedBy: 'teamId1', targetEntity: Game::class)]
-    #[Groups(['team:write'])]
+    #[Groups(['team:write', 'team:read'])]
     private Collection $games;
 
     #[ORM\OneToMany(mappedBy: 'team', targetEntity: Bet::class)]
-    #[Groups(['team:write'])]
+    #[Groups(['team:write', 'team:read'])]
     private Collection $bets;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['team:write'])]
+    #[Groups(['team:write', 'team:read'])]
     private ?string $type = null;
 
     public function __construct()
