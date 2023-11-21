@@ -40,11 +40,11 @@ class Team
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['team:write'])]
+    #[Groups(['team:write', 'game:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['team:write'])]
+    #[Groups(['team:write', 'game:read'])]
     private ?string $logo = null;
 
     #[ORM\OneToMany(mappedBy: 'teamId1', targetEntity: Game::class)]
