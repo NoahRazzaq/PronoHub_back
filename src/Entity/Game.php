@@ -37,7 +37,7 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all'])]
     private ?int $id = null;
 
     #[ORM\Column]
