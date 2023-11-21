@@ -19,14 +19,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
-        new GetCollection(),
+        new Get(
+            normalizationContext: ['groups' => ['game:read:id']],
+            denormalizationContext: ['groups' => ['game:write:id']],
+        ),
+        new GetCollection(
+            normalizationContext: ['groups' => ['game:read:all']]
+        ),
         new Post(),
         new Put(),
         new Patch(),
         new Delete(),
     ],
-    normalizationContext: ['groups' => ['game:read']],
 )]
 class Game
 {
@@ -37,35 +41,35 @@ class Game
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all','game:read:id'])]
     private ?int $score1 = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all','game:read:id'])]
     private ?int $score2 = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all'])]
     private ?string $banner = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all','game:read:id'])]
     private ?\DateTimeInterface $dateMatch = null;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all','game:read:id'])]
     private ?Team $teamId1 = null;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all','game:read:id'])]
     private ?Team $teamId2 = null;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Bet::class)]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all','game:read:id'])]
     private Collection $bets;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all'])]
     private ?Category $idCategory = null;
 
     public function __construct()

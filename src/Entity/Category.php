@@ -33,7 +33,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['game:read'])]
+    #[Groups(['game:read:all'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'idCategory', targetEntity: Game::class)]
