@@ -18,6 +18,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource(
     operations: [
         new Get(),
+        new Get(
+            // uriTemplate: '/bets/history/{userId}',
+            // controller: BetController::class,
+            // name: 'app_bet_history',
+        ),
         new GetCollection(),
         new Post(),
         new Put(),

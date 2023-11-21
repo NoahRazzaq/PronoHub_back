@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 #[ApiResource(
@@ -24,7 +25,8 @@ use Doctrine\ORM\Mapping as ORM;
         new Put(),
         new Patch(),
         new Delete(),
-    ]
+    ],
+    normalizationContext: ['groups' => ['game:read']],
 )]
 class Game
 {
@@ -34,27 +36,35 @@ class Game
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['game:read'])]
     private ?int $score1 = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['game:read'])]
     private ?int $score2 = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['game:read'])]
     private ?string $banner = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['game:read'])]
     private ?\DateTimeInterface $dateMatch = null;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
+    #[Groups(['game:read'])]
     private ?Team $teamId1 = null;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
+    #[Groups(['game:read'])]
     private ?Team $teamId2 = null;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Bet::class)]
+    #[Groups(['game:read'])]
     private Collection $bets;
 
     #[ORM\ManyToOne(inversedBy: 'games')]
+    #[Groups(['game:read'])]
     private ?Category $idCategory = null;
 
     public function __construct()
