@@ -13,9 +13,17 @@ use App\Entity\Pokedex;
 use App\Entity\Team;
 use App\Entity\User;
 use Faker;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+    
     public function load(ObjectManager $manager): void
     {
 
@@ -37,14 +45,14 @@ class AppFixtures extends Fixture
             $manager->persist($teams2);
 
             $categorys = new Category();
-            $categorys->setName($faker->name);
+            $categorys->setName('Rugby');
 
             $manager->persist($categorys);
 
             $games = new Game();
             $games->setScore1($faker->randomDigit)
                 ->setScore2($faker->randomDigit)
-                ->setBanner($faker->text)
+                ->setBanner('https://helpx.adobe.com/content/dam/help/en/photoshop/using/convert-color-image-black-white/jcr_content/main-pars/before_and_after/image-before/Landscape-Color.jpg')
                 ->setDateMatch($faker->dateTime())
                 ->setTeamId1($teams1)
                 ->setTeamId2($teams2)
@@ -55,11 +63,12 @@ class AppFixtures extends Fixture
 
         for ($i = 0; $i < 9; $i++) {
             $users = new User();
-            $password = $faker->password(2, 6);
+            $hashedPassword = $this->passwordHasher->hashPassword($users, 'password');
             $users->setLastname($faker->lastName)
                    ->setName($faker->name)
                    ->setEmail($faker->email)
-                   ->setPassword($password);
+                   ->setPassword($hashedPassword)
+                   ->setRoles(['ROLE_USER']);
             
             $manager->persist($users);
         
