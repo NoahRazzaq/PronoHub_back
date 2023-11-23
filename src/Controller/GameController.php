@@ -34,7 +34,7 @@ class GameController extends AbstractController
     private function serializeGame($game): array
     {
         $context = [
-            AbstractNormalizer::GROUPS => ['game:read:all'],
+            AbstractNormalizer::GROUPS => ['game:read:id'],
         ];
 
         $data = $this->serializer->normalize($game, null, $context);
