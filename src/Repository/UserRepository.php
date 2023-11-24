@@ -52,4 +52,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $user->getBet()->toArray();
     }
     
+    public function countValidBetsByUserId(int $userId): int
+    {
+        $bets = $this->findBetsByUserId($userId);
+
+        $validBetCount = 0;
+
+        foreach ($bets as $bet) {
+            if ($bet->getStatus() === 'valid') {
+                $validBetCount++;
+            }
+        }
+
+        return $validBetCount;
+    }
+
 }
