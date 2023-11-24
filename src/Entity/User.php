@@ -61,9 +61,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $league;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['game:read:id'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['game:read:id'])]
     private ?string $lastname = null;
 
     #[ORM\OneToMany(mappedBy: 'idUserCreator', targetEntity: League::class)]

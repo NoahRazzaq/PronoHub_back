@@ -14,6 +14,7 @@ use App\Controller\BetController;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BetRepository::class)]
 #[ApiResource(
@@ -31,9 +32,11 @@ class Bet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['game:read:id'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bets')]
+    #[Groups(['game:read:id'])]
     private ?Team $team = null;
 
     #[ORM\ManyToOne(inversedBy: 'bets')]
@@ -46,9 +49,11 @@ class Bet
     private ?bool $isDraw = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'bet')]
+    #[Groups(['game:read:id'])]
     private Collection $users;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['game:read:id'])]
     private ?string $status = null;
 
     public function __construct()

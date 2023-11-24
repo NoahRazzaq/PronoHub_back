@@ -55,6 +55,14 @@ class UserController extends AbstractController
         return new JsonResponse($formattedBetHistory, Response::HTTP_OK);
     }
 
+    #[Route('/score/{userId}', name: 'score', methods: ['GET'])]
+    public function getUserScore(int $userId, UserRepository $userRepository): JsonResponse
+    {
+        $score = $userRepository->countValidBetsByUserId($userId);
+
+        return new JsonResponse(['score' => $score]);
+    }
+
     #[Route("/register", name: 'create_user', methods: ['POST'])]
     public function create(
         Request $request,
