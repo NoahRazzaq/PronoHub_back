@@ -40,15 +40,15 @@ class UserController extends AbstractController
 
         foreach ($betHistory as $bet) {
             $formattedBetHistory[] = [
-                'Id' => $bet->getId(),
-                'Status' => $bet->getStatus(),
-                'id match' => $bet->getGame()->getId(),
-                'Team parié' => $bet->getTeam()->getName(),
-                'Nom team 1' => $bet->getGame()->getTeamId1()->getName(),
-                'Nom team 2' => $bet->getGame()->getTeamId2()->getName(),
-                'Score 1' => $bet->getGame()->getScore1(),
-                'Score 2' => $bet->getGame()->getScore2(),
-                'Date match ' => $bet->getGame()->getDateMatch(),
+                'id' => $bet->getId(),
+                'status' => $bet->getStatus(),
+                'idMatch' => $bet->getGame()->getId(),
+                'teamParié' => $bet->getTeam()->getName(),
+                'nomTeam1' => $bet->getGame()->getTeamId1()->getName(),
+                'nomTeam2' => $bet->getGame()->getTeamId2()->getName(),
+                'score1' => $bet->getGame()->getScore1(),
+                'score2' => $bet->getGame()->getScore2(),
+                'dateMatch ' => $bet->getGame()->getDateMatch(),
             ];
         }
 
