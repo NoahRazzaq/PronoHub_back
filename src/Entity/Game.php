@@ -22,8 +22,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new Get(
             name: 'gamesID', 
-        uriTemplate: '/games/{id}', 
-        controller: GameController::class,
+            uriTemplate: '/games/{id}', 
+            controller: GameController::class,
             normalizationContext: ['groups' => ['game:read:id']],
             denormalizationContext: ['groups' => ['game:write:id']],
         ),

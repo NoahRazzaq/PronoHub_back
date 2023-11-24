@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use App\Repository\BetRepository;
+use App\Controller\BetController;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,11 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource(
     operations: [
         new Get(),
-        new Get(
-            // uriTemplate: '/bets/history/{userId}',
-            // controller: BetController::class,
-            // name: 'app_bet_history',
-        ),
         new GetCollection(),
         new Post(),
         new Put(),
