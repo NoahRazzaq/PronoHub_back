@@ -48,7 +48,7 @@ class Bet
     #[ORM\Column]
     private ?bool $isDraw = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'bet')]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'bets')]
     #[Groups(['game:read:id'])]
     private Collection $users;
 

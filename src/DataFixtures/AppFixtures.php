@@ -56,7 +56,7 @@ class AppFixtures extends Fixture
                 ->setDateMatch($faker->dateTime())
                 ->setTeamId1($teams1)
                 ->setTeamId2($teams2)
-                ->setIdCategory($categorys);
+                ->setcategory($categorys);
 
             $manager->persist($games);
         }
