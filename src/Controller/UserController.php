@@ -33,7 +33,7 @@ class UserController extends AbstractController
         $betHistory = $this->userRepository->findBetsByUserId($userId);
 
         if (!$betHistory) {
-            return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'Bet not found'], Response::HTTP_NOT_FOUND);
         }
 
         $formattedBetHistory = [];
