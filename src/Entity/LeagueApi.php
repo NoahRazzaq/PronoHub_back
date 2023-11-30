@@ -1,42 +1,27 @@
 <?php
 
 namespace App\Entity;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Delete;
-use App\Repository\CategoryRepository;
+
+use App\Repository\LeagueApiRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(),
-        new Delete(),
-    ]
-)]
-class Category
+#[ORM\Entity(repositoryClass: LeagueApiRepository::class)]
+class LeagueApi
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['game:read:all'])]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Game::class)]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $identifier = null;
+
+    #[ORM\OneToMany(mappedBy: 'leagueApi', targetEntity: Game::class)]
     private Collection $games;
 
     public function __construct()
@@ -54,9 +39,21 @@ class Category
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    public function setIdentifier(?string $identifier): static
+    {
+        $this->identifier = $identifier;
 
         return $this;
     }
@@ -73,7 +70,7 @@ class Category
     {
         if (!$this->games->contains($game)) {
             $this->games->add($game);
-            $game->setcategory($this);
+            $game->setLeagueApi($this);
         }
 
         return $this;
@@ -83,8 +80,8 @@ class Category
     {
         if ($this->games->removeElement($game)) {
             // set the owning side to null (unless already changed)
-            if ($game->getcategory() === $this) {
-                $game->setcategory(null);
+            if ($game->getLeagueApi() === $this) {
+                $game->setLeagueApi(null);
             }
         }
 

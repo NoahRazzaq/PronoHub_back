@@ -74,11 +74,21 @@ class Game
 
     #[ORM\ManyToOne(inversedBy: 'games')]
     #[Groups(['game:read:all'])]
-    private ?Category $idCategory = null;
+    private ?Category $category = null;
+
+    #[ORM\ManyToOne(inversedBy: 'games')]
+    private ?LeagueApi $leagueApi = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isFinished = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $round = null;
 
     public function __construct()
     {
         $this->bets = new ArrayCollection();
+        $this->isFinished = false;
     }
 
     public function getId(): ?int
@@ -188,14 +198,50 @@ class Game
         return $this;
     }
 
-    public function getIdCategory(): ?Category
+    public function getcategory(): ?Category
     {
-        return $this->idCategory;
+        return $this->category;
     }
 
-    public function setIdCategory(?Category $idCategory): static
+    public function setcategory(?Category $category): static
     {
-        $this->idCategory = $idCategory;
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getLeagueApi(): ?LeagueApi
+    {
+        return $this->leagueApi;
+    }
+
+    public function setLeagueApi(?LeagueApi $leagueApi): static
+    {
+        $this->leagueApi = $leagueApi;
+
+        return $this;
+    }
+
+    public function isIsFinished(): ?bool
+    {
+        return $this->isFinished;
+    }
+
+    public function setIsFinished(?bool $isFinished): static
+    {
+        $this->isFinished = $isFinished;
+
+        return $this;
+    }
+
+    public function getRound(): ?int
+    {
+        return $this->round;
+    }
+
+    public function setRound(?int $round): static
+    {
+        $this->round = $round;
 
         return $this;
     }

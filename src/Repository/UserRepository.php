@@ -49,7 +49,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
     
-        return $user->getBet()->toArray();
+        $bets = $user->getBet()->toArray();
+        usort($bets, function($a, $b) {
+            return strcmp($a->getStatus(), $b->getStatus());
+        });
+
+        return $bets;
     }
     
     public function countValidBetsByUserId(int $userId): int
