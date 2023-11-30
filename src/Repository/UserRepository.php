@@ -51,7 +51,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     
         $bets = $user->getBet()->toArray();
         usort($bets, function($a, $b) {
-            return strcmp($a->getStatus(), $b->getStatus());
+            return strcmp($b->getStatus(), $a->getStatus());
         });
 
         return $bets;
