@@ -66,10 +66,6 @@ class Team
     #[Groups(['team:write', 'team:read'])]
     private Collection $bets;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['team:write', 'team:read'])]
-    private ?string $type = null;
-
     public function __construct()
     {
         $this->games = new ArrayCollection();
@@ -161,18 +157,6 @@ class Team
                 $bet->setTeam(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
 
         return $this;
     }
